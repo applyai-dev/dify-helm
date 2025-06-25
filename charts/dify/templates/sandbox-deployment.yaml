@@ -98,6 +98,10 @@ spec:
             protocol: TCP
         resources:
           {{- toYaml .Values.sandbox.resources | nindent 12 }}
+        volumeMounts:
+        - name: sandbox-data
+          mountPath: {{ .Values.sandbox.persistence.mountPath | quote }}
+          subPath: {{ .Values.sandbox.persistence.persistentVolumeClaim.subPath | default "" }}
     {{- if and (.Values.nodeSelector) (not .Values.sandbox.nodeSelector) }}
       nodeSelector:
 {{ toYaml .Values.nodeSelector | indent 8 }}
@@ -122,4 +126,8 @@ spec:
       tolerations:
 {{ toYaml .Values.sandbox.tolerations | indent 8 }}
     {{- end }}
+      volumes:
+      - name: sandbox-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.sandbox.persistence.existingClaim | default (printf "%s-sandbox" (include "dify.fullname" . | trunc 58)) }}
 {{- end }}

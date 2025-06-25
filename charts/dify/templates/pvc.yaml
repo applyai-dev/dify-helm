@@ -125,3 +125,32 @@ spec:
       storage: {{ $pvc.size }}
 {{- end }}
 {{- end }}
+
+---
+
+{{- $sandboxPvc := .Values.sandbox.persistence.persistentVolumeClaim -}}
+{{- if not $sandboxPvc.existingClaim }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ printf "%s-sandbox" (include "dify.fullname" . | trunc 58) }}
+{{- with .Values.sandbox.persistence.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+  labels:
+{{ include "dify.labels" . | indent 4 }}
+spec:
+  accessModes:
+    - {{ $sandboxPvc.accessModes | quote }}
+  {{- if $sandboxPvc.storageClass }}
+    {{- if eq "-" $sandboxPvc.storageClass }}
+  storageClassName: ""
+    {{- else }}
+  storageClassName: {{ $sandboxPvc.storageClass }}
+    {{- end }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ $sandboxPvc.size }}
+{{- end }}

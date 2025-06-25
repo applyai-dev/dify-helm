@@ -533,6 +533,16 @@ sandbox:
     ## @param sandbox.serviceAccount.annotations Additional custom annotations for the ServiceAccount
     ##
     annotations: {}
+  persistence:
+    existingClaim: ""
+    mountPath: "/var/sandbox/sandbox-python/data"
+    annotations:
+      helm.sh/resource-policy: keep
+    persistentVolumeClaim:
+      accessModes: ReadOnlyMany
+      storageClass:
+      size: 5Gi
+      subPath: ""
 
 ssrfProxy:
   enabled: false
