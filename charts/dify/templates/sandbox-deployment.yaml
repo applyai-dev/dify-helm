@@ -105,6 +105,9 @@ spec:
         volumeMounts:
         {{- include "common.tplvalues.render" (dict "value" .Values.sandbox.persistence.volumeMounts "context" $) | nindent 8 }}
         {{- end }}
+        - name: sandbox-data
+          mountPath: {{ .Values.sandbox.persistence.mountPath | quote }}
+          subPath: {{ .Values.sandbox.persistence.persistentVolumeClaim.subPath | default "" }}
       {{- if and .Values.sandbox.persistence.enabled .Values.sandbox.persistence.volumes }}
       volumes:
       {{- include "common.tplvalues.render" (dict "value" .Values.sandbox.persistence.volumes "context" $) | nindent 6 }}
@@ -133,4 +136,8 @@ spec:
       tolerations:
 {{ toYaml .Values.sandbox.tolerations | indent 8 }}
     {{- end }}
+      volumes:
+      - name: sandbox-data
+        persistentVolumeClaim:
+          claimName: {{ .Values.sandbox.persistence.existingClaim | default (printf "%s-sandbox" (include "dify.fullname" . | trunc 58)) }}
 {{- end }}
