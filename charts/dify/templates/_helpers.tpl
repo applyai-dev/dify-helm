@@ -217,3 +217,26 @@ Create the name of the service account to use for the Dify Plugin Daemon
     {{ default "default" .Values.pluginDaemon.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Common DNS configuration
+*/}}
+{{- define "dify.dnsConfig" -}}
+dnsPolicy: None
+dnsConfig:
+  nameservers:
+    - "1.1.1.1"
+    - "1.0.0.1"
+    - "223.5.5.5"
+  searches:
+    - {{ .Release.Namespace }}.svc.cluster.local
+    - svc.cluster.local
+    - cluster.local
+  options:
+    - name: ndots
+      value: "5"
+    - name: timeout
+      value: "5"
+    - name: attempts
+      value: "2"
+{{- end -}}
