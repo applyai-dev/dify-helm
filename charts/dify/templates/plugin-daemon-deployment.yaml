@@ -50,6 +50,15 @@ spec:
         */}}
 {{ include "dify.ud.labels" . | indent 8 }}
     spec:
+      dnsPolicy: Default
+      dnsConfig:
+        options:
+        - name: timeout
+          value: "2"
+        - name: attempts
+          value: "3"
+        - name: rotate
+        - name: single-request-reopen
       serviceAccountName: {{ include "dify.pluginDaemon.serviceAccountName" . }}
       {{- if .Values.pluginDaemon.priorityClassName }}
       priorityClassName: {{ .Values.pluginDaemon.priorityClassName | quote }}
