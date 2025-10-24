@@ -46,6 +46,11 @@ spec:
       {{- if .Values.api.priorityClassName }}
       priorityClassName: {{ .Values.api.priorityClassName | quote }}
       {{- end }}
+      dnsConfig:
+        options:
+          - name: attempts
+            value: "5"
+          - name: rotate
       {{- if eq .Release.Name "dify"}}
       {{/*
       Disable service environment variables,

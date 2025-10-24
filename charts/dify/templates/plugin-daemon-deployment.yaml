@@ -54,6 +54,11 @@ spec:
       {{- if .Values.pluginDaemon.priorityClassName }}
       priorityClassName: {{ .Values.pluginDaemon.priorityClassName | quote }}
       {{- end }}
+      dnsConfig:
+        options:
+          - name: attempts
+            value: "5"
+          - name: rotate
       {{- if .Values.image.pluginDaemon.pullSecrets }}
       imagePullSecrets:
       {{- range .Values.image.pluginDaemon.pullSecrets }}
