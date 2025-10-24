@@ -45,11 +45,7 @@ spec:
       {{- if .Values.sandbox.priorityClassName }}
       priorityClassName: {{ .Values.sandbox.priorityClassName | quote }}
       {{- end }}
-      dnsConfig:
-        options:
-          - name: attempts
-            value: "5"
-          - name: rotate
+{{ include "dify.dnsConfig" . | indent 6 }}
       {{- if .Values.image.sandbox.pullSecrets }}
       imagePullSecrets:
       {{- range .Values.image.sandbox.pullSecrets }}
