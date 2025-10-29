@@ -39,7 +39,7 @@ dependencies:
     - redis
 - name: weaviate
   version: 16.1.0
-  repository: https://weaviate.github.io/weaviate-helm
+  repository: file://charts/weaviate
   condition: weaviate.enabled
   tags:
     - vector

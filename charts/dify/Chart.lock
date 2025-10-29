@@ -6,7 +6,7 @@ dependencies:
   repository: https://charts.bitnami.com/bitnami
   version: 16.13.2
 - name: weaviate
-  repository: https://weaviate.github.io/weaviate-helm
-  version: 17.3.3
-digest: sha256:b0096852b46655effd19195b34f08d9152419fa5fc4ae2fdda16617e22cf30c1
-generated: "2025-10-24T20:30:01.080791302+08:00"
+  repository: file://charts/weaviate
+  version: 16.1.0
+digest: sha256:4bf877963bb1009d8bc14f6ca67e9fce692cd6f8d3ae1e5c198fa2018f32bc4a
+generated: "2025-10-29T13:51:02.988059+08:00"
