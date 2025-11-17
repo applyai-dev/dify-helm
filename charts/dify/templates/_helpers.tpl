@@ -89,6 +89,14 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end -}}
 
 {{/*
+Create a default fully qualified enterprise name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+*/}}
+{{- define "dify.enterprise.fullname" -}}
+{{ template "dify.fullname" . }}-enterprise
+{{- end -}}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "dify.chart" -}}
@@ -215,6 +223,17 @@ Create the name of the service account to use for the Dify Plugin Daemon
     {{ default (include "dify.pluginDaemon.fullname" .) .Values.pluginDaemon.serviceAccount.name | trunc 63 | trimSuffix "-" }}
 {{- else -}}
     {{ default "default" .Values.pluginDaemon.serviceAccount.name }}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create the name of the service account to use for the enterprise server
+*/}}
+{{- define "dify.enterprise.serviceAccountName" -}}
+{{- if .Values.enterprise.serviceAccount.create -}}
+    {{ default (include "dify.enterprise.fullname" .) .Values.enterprise.serviceAccount.name | trunc 63 | trimSuffix "-" }}
+{{- else -}}
+    {{ default "default" .Values.enterprise.serviceAccount.name }}
 {{- end -}}
 {{- end -}}
 

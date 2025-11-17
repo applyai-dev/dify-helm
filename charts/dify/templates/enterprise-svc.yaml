@@ -1,0 +1,29 @@
+{{- if .Values.enterprise.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "dify.enterprise.fullname" . }}
+  labels:
+{{ include "dify.labels" . | indent 4 }}
+{{- if .Values.enterprise.service.labels }}
+{{ toYaml .Values.enterprise.service.labels | indent 4 }}
+{{- end }}
+    component: "enterprise"
+{{- with .Values.enterprise.service.annotations }}
+  annotations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+spec:
+  type: ClusterIP
+  {{- if .Values.enterprise.service.clusterIP }}
+  clusterIP: {{ .Values.enterprise.service.clusterIP }}
+  {{- end }}
+  ports:
+    - name: http-enterprise
+      port: {{ .Values.enterprise.service.port }}
+      protocol: TCP
+      targetPort: enterprise
+  selector:
+{{ include "dify.selectorLabels" . | indent 4 }}
+    component: "enterprise"
+{{- end }}

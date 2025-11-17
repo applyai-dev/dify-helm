@@ -1,0 +1,114 @@
+{{- if and .Values.enterprise.enabled}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+{{ include "dify.ud.annotations" . | indent 4 }}
+    descriptions: enterprise
+  labels:
+{{- include "dify.labels" . | nindent 4 }}
+    component: enterprise
+{{ include "dify.ud.labels" . | indent 4 }}
+  name: {{ template "dify.enterprise.fullname" . }}
+spec:
+  replicas: {{ .Values.enterprise.replicas }}
+  selector:
+    matchLabels:
+{{- include "dify.selectorLabels" . | nindent 6 }}
+      component: enterprise
+  {{- if .Values.enterprise.updateStrategy }}
+  strategy: {{- toYaml .Values.enterprise.updateStrategy | nindent 4 }}
+  {{- end }}
+  template:
+    metadata:
+      annotations:
+{{ include "dify.ud.annotations" . | indent 8 }}
+      labels:
+{{- include "dify.selectorLabels" . | nindent 8 }}
+        component: enterprise
+{{ include "dify.ud.labels" . | indent 8 }}
+    spec:
+      serviceAccountName: {{ include "dify.enterprise.serviceAccountName" . }}
+      {{- if .Values.enterprise.priorityClassName }}
+      priorityClassName: {{ .Values.enterprise.priorityClassName | quote }}
+      {{- end }}
+{{ include "dify.dnsConfig" . | indent 6 }}
+      {{- if .Values.image.enterprise.pullSecrets }}
+      imagePullSecrets:
+      {{- range .Values.image.enterprise.pullSecrets }}
+        - name: {{ . }}
+      {{- end }}
+      {{- end }}
+      {{- if .Values.enterprise.podSecurityContext }}
+      securityContext:
+{{ toYaml .Values.enterprise.podSecurityContext | indent 8 }}
+      {{- end }}
+      containers:
+      - image: "{{ .Values.image.enterprise.repository }}:{{ .Values.image.enterprise.tag }}"
+        imagePullPolicy: "{{ .Values.image.enterprise.pullPolicy }}"
+        name: enterprise
+        {{- if .Values.enterprise.customLivenessProbe }}
+        livenessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.enterprise.customLivenessProbe "context" $) | nindent 10 }}
+        {{- else if .Values.enterprise.livenessProbe.enabled }}
+        livenessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.enterprise.livenessProbe "enabled") "context" $) | nindent 10 }}
+          httpGet:
+            path: /info
+            port: enterprise
+        {{- end }}
+        {{- if .Values.enterprise.customReadinessProbe }}
+        readinessProbe: {{- include "common.tplvalues.render" (dict "value" .Values.enterprise.customReadinessProbe "context" $) | nindent 10 }}
+        {{- else if .Values.enterprise.readinessProbe.enabled }}
+        readinessProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.enterprise.readinessProbe "enabled") "context" $) | nindent 10 }}
+          httpGet:
+            path: /info
+            port: enterprise
+        {{- end }}
+        {{- if .Values.enterprise.customStartupProbe }}
+        startupProbe: {{- include "common.tplvalues.render" (dict "value" .Values.enterprise.customStartupProbe "context" $) | nindent 10 }}
+        {{- else if .Values.enterprise.startupProbe.enabled }}
+        startupProbe: {{- include "common.tplvalues.render" (dict "value" (omit .Values.enterprise.startupProbe "enabled") "context" $) | nindent 10 }}
+          httpGet:
+            path: /info
+            port: enterprise
+        {{- end }}
+        {{- if .Values.enterprise.containerSecurityContext }}
+        securityContext:
+{{ toYaml .Values.enterprise.containerSecurityContext | indent 10 }}
+        {{- end }}
+        env:
+        - name: REDIS_URL
+          value: {{ required "enterprise.redisUrl is required when enterprise.enabled" .Values.enterprise.redisUrl | quote }}
+        {{- if .Values.enterprise.extraEnv }}
+          {{- toYaml .Values.enterprise.extraEnv | nindent 8 }}
+        {{- end }}
+        ports:
+          - name: enterprise
+            containerPort: {{ .Values.enterprise.port }}
+            protocol: TCP
+        resources:
+          {{- toYaml .Values.enterprise.resources | nindent 12 }}
+      {{- if and (.Values.nodeSelector) (not .Values.enterprise.nodeSelector) }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if .Values.enterprise.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.enterprise.nodeSelector | indent 8 }}
+      {{- end }}
+      {{- if and (.Values.affinity) (not .Values.enterprise.affinity) }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+      {{- end }}
+      {{- if .Values.enterprise.affinity }}
+      affinity:
+{{ toYaml .Values.enterprise.affinity | indent 8 }}
+      {{- end }}
+      {{- if and (.Values.tolerations) (not .Values.enterprise.tolerations) }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+      {{- end }}
+      {{- if .Values.enterprise.tolerations }}
+      tolerations:
+{{ toYaml .Values.enterprise.tolerations | indent 8 }}
+      {{- end }}
+{{- end }}
