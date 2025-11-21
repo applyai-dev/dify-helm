@@ -105,10 +105,15 @@ spec:
         {{- if and .Values.sandbox.persistence.enabled .Values.sandbox.persistence.volumeMounts }}
         volumeMounts:
         {{- include "common.tplvalues.render" (dict "value" .Values.sandbox.persistence.volumeMounts "context" $) | nindent 8 }}
-        {{- end }}
         - name: sandbox-data
           mountPath: {{ .Values.sandbox.persistence.mountPath | quote }}
           subPath: {{ .Values.sandbox.persistence.persistentVolumeClaim.subPath | default "" }}
+        {{- else}}
+        volumeMounts:
+        - name: sandbox-data
+          mountPath: {{ .Values.sandbox.persistence.mountPath | quote }}
+          subPath: {{ .Values.sandbox.persistence.persistentVolumeClaim.subPath | default "" }}
+        {{- end }}
       {{- if and .Values.sandbox.persistence.enabled .Values.sandbox.persistence.volumes }}
       volumes:
       {{- include "common.tplvalues.render" (dict "value" .Values.sandbox.persistence.volumes "context" $) | nindent 6 }}
