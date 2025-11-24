@@ -76,6 +76,25 @@ service:
   clusterIP:
   annotations: {}
 
+# The service controls how weaviate gRPC endpoint is exposed to the outside world.
+# If you don't want a public load balancer, you can also choose 'ClusterIP' or `NodePort`
+# to make weaviate gRPC port be only accessible within your cluster.
+# This service is by default enabled but if you don't want it to be deployed in your
+# environment then it can be disabled by setting enabled: false option.
+grpcService:
+  enabled: true
+  name: weaviate-grpc
+  ports:
+    - name: grpc
+      protocol: TCP
+      port: 50051
+      # Target port is going to be the same for every port
+  type: LoadBalancer
+  loadBalancerSourceRanges: []
+  # optionally set cluster IP if you want to set a static IP
+  clusterIP:
+  annotations: {}
+
 # Adjust liveness, readiness and startup probes configuration
 startupProbe:
   # For kubernetes versions prior to 1.18 startupProbe is not supported thus can be disabled.

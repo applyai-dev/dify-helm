@@ -17,10 +17,6 @@ spec:
       port: 80
       protocol: TCP
       targetPort: 8080
-    - name: grpc
-      port: 50051
-      protocol: TCP
-      targetPort: 50051
 {{ if eq .Values.service.type "ClusterIP" -}}
   {{ if .Values.service.clusterIP }}
   clusterIP: {{ .Values.service.clusterIP }}
