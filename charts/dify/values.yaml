@@ -95,6 +95,18 @@ api:
   affinity: {}
   tolerations: []
   priorityClassName: ""
+  ## @param api.terminationGracePeriodSeconds Integer setting the termination grace period for the api pods
+  ## Useful for graceful shutdown when using KEDA/HPA with long-running requests
+  ## Should be >= GUNICORN_GRACEFUL_TIMEOUT + buffer
+  # terminationGracePeriodSeconds: 7260
+  ## @param api.lifecycle Lifecycle hooks for the api container
+  ## Useful for preStop hooks to drain connections before termination
+  ## Example:
+  # lifecycle:
+  #   preStop:
+  #     exec:
+  #       command: ["/bin/sh", "-c", "sleep 15"]
+  
   autoscaling:
     enabled: false
     minReplicas: 1
@@ -599,6 +611,16 @@ sandbox:
   podSecurityContext: {}
   # Configure Container Security Context
   containerSecurityContext: {}
+  ## @param sandbox.terminationGracePeriodSeconds Integer setting the termination grace period for the sandbox pods
+  ## Useful for graceful shutdown when using KEDA/HPA with long-running requests
+  # terminationGracePeriodSeconds: 330
+  ## @param sandbox.lifecycle Lifecycle hooks for the sandbox container
+  ## Useful for preStop hooks to drain connections before termination
+  ## Example:
+  # lifecycle:
+  #   preStop:
+  #     exec:
+  #       command: ["/bin/sh", "-c", "sleep 30"]
   extraEnv:
   # Apply your own Environment Variables if necessary
   # - name: LANG
@@ -609,6 +631,15 @@ sandbox:
   ##
   persistence:
     enabled: false
+    existingClaim: ""
+    mountPath: "/var/sandbox/sandbox-python/data"
+    annotations:
+      helm.sh/resource-policy: keep
+    persistentVolumeClaim:
+      accessModes: ReadOnlyMany
+      storageClass:
+      size: 5Gi
+      subPath: ""
     ## @param sandbox.persistence.volumes Optionally specify extra list of additional volumes for the Sandbox pod(s)
     ##
     volumes: []
@@ -639,16 +670,6 @@ sandbox:
     ## @param sandbox.serviceAccount.annotations Additional custom annotations for the ServiceAccount
     ##
     annotations: {}
-  persistence:
-    existingClaim: ""
-    mountPath: "/var/sandbox/sandbox-python/data"
-    annotations:
-      helm.sh/resource-policy: keep
-    persistentVolumeClaim:
-      accessModes: ReadOnlyMany
-      storageClass:
-      size: 5Gi
-      subPath: ""
 
 enterprise:
 
